@@ -1,0 +1,182 @@
+	CHAT_AVAILABLE = false; //will be set to true when chat engineers are available to chat on the desired channel
+    CHAT_APP = 'cloud'
+    CHAT_CHANNEL = 5;
+    CHAT_BASE_URL = 'https://chatbeta.commvault.com'; //"https://chatbeta.commvault.com";
+	var chatState = false; //boolean variable to keep track of chat being opened or closed
+	
+	$.fn.extend({	//defined a function "animateCss" to make use of Animate.css
+		animateCss: function (animationName) {
+			var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+			this.addClass('animated ' + animationName).one(animationEnd, function() {
+				$(this).removeClass('animated ' + animationName);
+			});
+		}
+	});
+	
+	jQuery.fn.visible = function() { //toggles visibility rather than "display"
+    return this.css('visibility', 'visible');
+	};
+
+	jQuery.fn.invisible = function() { //toggles visibility rather than "display"
+    return this.css('visibility', 'hidden');
+	};
+
+	
+    function detectAvailability() {
+
+        var partnerAccount = 'A618C621-7C10-E211-950A-D067E5F12FD2'; //Commvault
+        var userId = $('#userId').val(); //typically the email address of the user
+
+        var url = CHAT_BASE_URL + '/client/channelstatus?pid=' + partnerAccount + '&appId=' + CHAT_APP + '&userId=' + userId;
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'jsonp'
+        }).done(function (channelList) {
+
+            determineAvailability(channelList);
+
+        }).error(function (error) {
+            console.log("error!");
+            console.log(error);
+        });
+    }
+
+    function determineAvailability(channelList) {
+
+        CHAT_AVAILABLE = false;
+
+        for (var i = 0; i < channelList.length; i++) {
+            var channel = channelList[i];
+            if (channel.IsNocActive && channel.ChannelId == CHAT_CHANNEL) {
+                CHAT_AVAILABLE = true;
+            }
+        }
+		
+		
+		
+        if (CHAT_AVAILABLE) {
+            $('#chatNotAvailable').invisible();
+			$('#chatInfo').find('#userId, #firstMessage').val('');
+			$('#validationErrors').invisible();
+			$('#chatAvailable').visible();
+			$('#chatAvailable').animateCss("fadeInUp"); //Animate.css transition
+        } else {
+            $('#chatNotAvailable').visible();
+			$('#chatNotAvailable').animateCss("fadeInUp"); //Animate.css transition
+            $('#chatAvailable').invisible();
+        }
+    }
+	
+    function validEmail(email) {
+
+        var isValid = false;
+        var emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+        isValid = emailRegex.test(email);
+
+        return isValid;
+    }
+
+	function closeChatWindow(e){
+			e.preventDefault();
+			if($('#chatAvailable').not(':hidden')) {
+				$('#chatAvailable').animateCss("fadeOutDown"); //Animate.css transition, and a timed set of code to toggle visibility
+				setTimeout(function() {
+					$('#chatAvailable').invisible()
+				}, 800);				
+			}
+					
+			if($('#chatNotAvailable').not(':hidden')) {
+				$('#chatNotAvailable').animateCss("fadeOutDown"); //Animate.css transition, and a timed set of code to toggle visibility
+				setTimeout(function() {
+					$('#chatNotAvailable').invisible()
+				}, 800);	
+			}
+	}
+	
+    function startChatting() {
+		
+        $('#validationErrors').html('');
+
+        var userId = $('#userId').val();
+
+        if (!userId) {
+            $('#validationErrors').html('Email Address is required.');
+			$('#validationErrors').visible();
+            return false;
+        }
+
+        if (!validEmail(userId)) {
+            $('#validationErrors').html('Email Address is invalid.');
+			$('#validationErrors').visible();
+            return false;
+        }
+
+        var message = $('#firstMessage').val();
+
+        if (!message) {
+            $('#validationErrors').html('Chat message is required.');
+			$('#validationErrors').visible();
+            return false;
+        }
+
+        if (message.trim().length === 0) {
+            $('#validationErrors').html('Chat message is required.');
+			$('#validationErrors').visible();
+            return false;
+        }
+
+        if (message.length > 1000) {
+            $('#validationErrors').html('Chat message is too long. Please limit to 1000 characters or less.');
+			$('#validationErrors').visible();
+            return false;
+        }
+
+        var topic = 'Question from cloud user'; //This is normally a drop-down list maintained by each AppId
+
+        if (topic.length > 100) {
+            $('#validationErrors').html('Topic is too long. Please limit to 100 characters or less.');
+			$('#validationErrors').visible();
+            return false;
+        }
+
+        var url = CHAT_BASE_URL + '/client/anon?cid=' + CHAT_CHANNEL
+            + '&appId=' + encodeURIComponent(CHAT_APP)
+            + '&user=' + encodeURIComponent(userId)
+            + '&topic=' + encodeURIComponent(topic)
+            + '&message=' + encodeURIComponent(message);
+		$('#validationErrors').invisible();
+        window.open(url)
+
+    }
+
+	$(document)
+		.ready(function() {
+			$('#checkChat').click(function(e) {
+				if (chatState == false) {
+					console.log(chatState);
+					detectAvailability();
+					$('#openChat').animateCss("rotateOut"); //Animate.css transition, and a timed set of code to toggle visibility
+					setTimeout(function() {
+						$('#openChat').invisible();
+					}, 800);
+					setTimeout(function() { //Animate.css transition, and a timed set of code to toggle visibility
+						$('#closeChat').visible();
+						$('#closeChat').animateCss("rotateIn");
+					}, 500);
+					chatState = true;
+				} else {
+					console.log(chatState);
+					closeChatWindow(e);
+					$('#closeChat').animateCss("rotateOut"); //Animate.css transition, and a timed set of code to toggle visibility
+					setTimeout(function() {
+						$('#closeChat').invisible();
+					}, 800);
+					setTimeout(function() { //Animate.css transition, and a timed set of code to toggle visibility
+						$('#openChat').visible();
+						$('#openChat').animateCss("rotateIn");
+					}, 500);
+					chatState = false;
+				}
+			});
+		});
