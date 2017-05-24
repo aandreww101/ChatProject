@@ -3,6 +3,7 @@
     CHAT_CHANNEL = 5;
     CHAT_BASE_URL = 'https://chatbeta.commvault.com'; //"https://chatbeta.commvault.com";
 	var chatState = false; //boolean variable to keep track of chat being opened or closed
+	var disabled = false; //used to throttle user click input
 	
 	$.fn.extend({	//defined a function "animateCss" to make use of Animate.css
 		animateCss: function (animationName) {
@@ -59,11 +60,11 @@
             $('#chatNotAvailable').invisible();
 			$('#chatInfo').find('#userId, #firstMessage').val('');
 			$('#validationErrors').invisible();
-			$('#chatAvailable').visible();
 			$('#chatAvailable').animateCss("fadeInUp"); //Animate.css transition
+			$('#chatAvailable').visible();
         } else {
-            $('#chatNotAvailable').visible();
 			$('#chatNotAvailable').animateCss("fadeInUp"); //Animate.css transition
+			$('#chatNotAvailable').visible();
             $('#chatAvailable').invisible();
         }
     }
@@ -78,19 +79,19 @@
     }
 
 	function closeChatWindow(e){
-			e.preventDefault();
+			
 			if($('#chatAvailable').not(':hidden')) {
 				$('#chatAvailable').animateCss("fadeOutDown"); //Animate.css transition, and a timed set of code to toggle visibility
 				setTimeout(function() {
 					$('#chatAvailable').invisible()
-				}, 80);				
+				}, 350);				
 			}
 					
 			if($('#chatNotAvailable').not(':hidden')) {
 				$('#chatNotAvailable').animateCss("fadeOutDown"); //Animate.css transition, and a timed set of code to toggle visibility
 				setTimeout(function() {
 					$('#chatNotAvailable').invisible()
-				}, 80);	
+				}, 350);	
 			}
 	}
 	
@@ -149,34 +150,38 @@
         window.open(url)
 
     }
-
+	
+	
 	$(document)
 		.ready(function() {
 			$('#checkChat').click(function(e) {
+				if (disabled) { return; }
+				disabled = true;
 				if (chatState == false) {
+					chatState = true;
 					console.log(chatState);
 					detectAvailability();
 					$('#openChat').animateCss("rotateOut"); //Animate.css transition, and a timed set of code to toggle visibility
 					setTimeout(function() {
 						$('#openChat').invisible();
-					}, 8);
+					}, 350);
 					setTimeout(function() { //Animate.css transition, and a timed set of code to toggle visibility
 						$('#closeChat').visible();
 						$('#closeChat').animateCss("rotateIn");
-					}, 5);
-					chatState = true;
+					}, 50);
 				} else {
+					chatState = false;
 					console.log(chatState);
 					closeChatWindow(e);
 					$('#closeChat').animateCss("rotateOut"); //Animate.css transition, and a timed set of code to toggle visibility
 					setTimeout(function() {
 						$('#closeChat').invisible();
-					}, 8);
+					}, 350);
 					setTimeout(function() { //Animate.css transition, and a timed set of code to toggle visibility
 						$('#openChat').visible();
 						$('#openChat').animateCss("rotateIn");
-					}, 5);
-					chatState = false;
+					}, 50);
 				}
+				setTimeout(function() {disabled = false;},450);
 			});
 		});

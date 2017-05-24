@@ -277,13 +277,13 @@ text-decoration:none;
 }
 
 #chatAvailable {
-  -webkit-animation-duration: .35s;
-  -moz-animation-duration: .35s;
+  -webkit-animation-duration: .5s;
+  -moz-animation-duration: .5s;
 }
 
 #chatNotAvailable {
-  -moz-animation-duration: .35s;
-  -webkit-animation-duration: .35s;
+  -moz-animation-duration: .5s;
+  -webkit-animation-duration: .5s;
 }
 
 #chatTestDiv{
