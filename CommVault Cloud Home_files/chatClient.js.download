@@ -83,14 +83,14 @@
 				$('#chatAvailable').animateCss("fadeOutDown"); //Animate.css transition, and a timed set of code to toggle visibility
 				setTimeout(function() {
 					$('#chatAvailable').invisible()
-				}, 800);				
+				}, 80);				
 			}
 					
 			if($('#chatNotAvailable').not(':hidden')) {
 				$('#chatNotAvailable').animateCss("fadeOutDown"); //Animate.css transition, and a timed set of code to toggle visibility
 				setTimeout(function() {
 					$('#chatNotAvailable').invisible()
-				}, 800);	
+				}, 80);	
 			}
 	}
 	
@@ -159,11 +159,11 @@
 					$('#openChat').animateCss("rotateOut"); //Animate.css transition, and a timed set of code to toggle visibility
 					setTimeout(function() {
 						$('#openChat').invisible();
-					}, 800);
+					}, 8);
 					setTimeout(function() { //Animate.css transition, and a timed set of code to toggle visibility
 						$('#closeChat').visible();
 						$('#closeChat').animateCss("rotateIn");
-					}, 500);
+					}, 5);
 					chatState = true;
 				} else {
 					console.log(chatState);
@@ -171,11 +171,11 @@
 					$('#closeChat').animateCss("rotateOut"); //Animate.css transition, and a timed set of code to toggle visibility
 					setTimeout(function() {
 						$('#closeChat').invisible();
-					}, 800);
+					}, 8);
 					setTimeout(function() { //Animate.css transition, and a timed set of code to toggle visibility
 						$('#openChat').visible();
 						$('#openChat').animateCss("rotateIn");
-					}, 500);
+					}, 5);
 					chatState = false;
 				}
 			});

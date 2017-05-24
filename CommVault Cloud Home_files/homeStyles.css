@@ -266,6 +266,25 @@ text-decoration:none;
 
 /* Chat window styles */
 
+#openChat {
+  -webkit-animation-duration: .35s;
+  -moz-animation-duration: .35s;
+}
+
+#closeChat {
+  -webkit-animation-duration: .35s;
+  -moz-animation-duration: .35s;
+}
+
+#chatAvailable {
+  -webkit-animation-duration: .35s;
+  -moz-animation-duration: .35s;
+}
+
+#chatNotAvailable {
+  -moz-animation-duration: .35s;
+  -webkit-animation-duration: .35s;
+}
 
 #chatTestDiv{
 background: #36597b;
